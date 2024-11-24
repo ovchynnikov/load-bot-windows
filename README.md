@@ -13,6 +13,8 @@ bot_token = "your_telegram_bot_token_here"
 ### 3. Start 
 ```
 double-click on start_bot.bat
-or 
+```
+or
+```
 python main.py
 ```
