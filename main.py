@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.error import TimedOut
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
+from telegram.constants import MessageEntityType
 
 load_dotenv()
 show_errors_in_console = os.getenv("DEBUG")
@@ -20,12 +21,21 @@ def print_logs(text):
     if show_errors_in_console:
         print(text)
 
+
 def load_responses():
     with open("responses.json", "r", encoding="utf-8") as file:
         data = json.load(file)
     return data["responses"]
 
 responses = load_responses()
+
+
+def spoiler_in_message(entities):
+    if entities:
+        for entity in entities:
+            if entity.type == MessageEntityType.SPOILER:
+                return True
+    return False
 
 
 def cleanup_file(video_path):
@@ -78,16 +88,19 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE): # 
     elif "instagram.com/stories/" in url:
         await update.message.reply_text("Сторіз не можу скачати. Треба логін")
 
-    elif "instagram.com/reel/" in url or "tiktok.com/" in url:
-        wait_message = await update.message.reply_text("Почекай пару сек...")
+    elif "instagram.com/reel/" in url or "tiktok.com/" in url or "reddit.com" in url or "x.com" in url:
+        # wait_message = await update.message.reply_text("Почекай пару сек...")
 
         video_path = download_video(url)
-
+        visibility_flag = spoiler_in_message(update.message.entities)
         if video_path and os.path.exists(video_path):
             with open(video_path, 'rb') as video_file:
                 try:
-                    await update.message.reply_video(video_file)
-                    await wait_message.delete()
+                    await update.message.chat.send_video(     
+                        video=video_file,
+                        has_spoiler=visibility_flag
+                    )
+                    # await wait_message.delete()
                 except TimedOut as e:
                     print_logs(f"Telegram timeout while sending video. {e}")
                 except Exception as e:
@@ -95,14 +108,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE): # 
                     return None
             cleanup_file(video_path)
         else:
-            await wait_message.delete()
-            await update.message.reply_text("О Курва! Якась помилка. Спробуй ще.")
+            pass
+            # await wait_message.delete()
+            # await update.message.reply_text("О Курва! Якась помилка. Спробуй ще.")
     else:
         pass
 
 
 def main():
-    bot_token = os.getenv("bot_token")
+    bot_token = os.getenv("BOT_TOKEN")
     application = Application.builder().token(bot_token).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     print("Bot started. Ctrl+c to stop")
