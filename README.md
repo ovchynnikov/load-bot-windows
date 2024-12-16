@@ -6,7 +6,7 @@ or install manually
   ```
 pip install python-telegram-bot python-dotenv yt-dlp ffmpeg
 ```
-### 2. Set your telegram bot token as bot_token in .env file
+### 2. Set your telegram bot token as BOT_TOKEN in .env file
 ```
 BOT_TOKEN = "your_telegram_bot_token_here"
 ```
