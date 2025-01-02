@@ -14,6 +14,10 @@ BOT_TOKEN = "your_telegram_bot_token_here"
 ```
 https://www.ffmpeg.org/download.html#build-windows
 ```
+### 2.1.2 Set your FFPROBE_PATH in .env file specifying the ffmpeg location
+```
+FFPROBE_PATH = "C:\\Users\\User\\Desktop\\ffmpeg\\bin\\ffprobe.exe"
+```
 ### 3. Start 
 ```
 double-click on start_bot.bat

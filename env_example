@@ -1,0 +1,4 @@
+# pylint: disable=missing-module-docstring
+BOT_TOKEN = "your_telegram_bot_token_here"
+DEBUG=False
+FFPROBE_PATH = "C:\\Users\\User\\Desktop\\ffmpeg\\bin\\ffprobe.exe"
