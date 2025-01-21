@@ -57,7 +57,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         return
 
     url = url[2:] if url.startswith("**") else url  # Remove '**' if present
-    
+
     # Download the video
     video_path = download_video(url)
 
@@ -85,7 +85,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         print_logs(f"Telegram timeout while sending video. {e}")
     except telegram.error.TelegramError:
         await update.message.reply_text(
-            f"О kurwa! Compressed file size: {os.path.getsize(video_path) / (1024 * 1024):.2f}MB. Telegram API Max is 50MB"
+            f"О kurwa! Compressed file size: "
+            f"{os.path.getsize(video_path) / (1024 * 1024):.2f}MB. "
+            f"Telegram API Max is 50MB"
         )
 
     # Clean up the video file after sending
