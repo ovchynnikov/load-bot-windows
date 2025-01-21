@@ -17,7 +17,8 @@ from video_utils import compress_video, download_video, cleanup_file
 
 load_dotenv()
 
-supported_sites = ["instagram.com/", "tiktok.com/", "reddit.com", "x.com", "**https:"]
+supported_sites = ["//instagram.com/", "//tiktok.com/",
+                   "//reddit.com/", "//x.com/", "//youtube.com/shorts", "**https://"]
 
 @lru_cache(maxsize=1)
 def load_responses():
@@ -35,31 +36,34 @@ def spoiler_in_message(entities):
                 return True
     return False
 
-
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  # pylint: disable=unused-argument
+    """Handle incoming messages and process videos."""
     if not update.message or not update.message.text:
         return
 
-    url = update.message.text
+    message_text = update.message.text.strip()
 
     # Heartbeat word
-    if "ботяра" in url.lower():
+    if "ботяра" in message_text.lower():
         response = random.choice(responses)
         await update.message.reply_text(response)
         return
 
+    message_text = message_text.replace("** ", "**")
+
     # Quick check before more expensive operations
-    if not any(site in url for site in supported_sites):
+    if not any(site in message_text for site in supported_sites):
         return
 
-    if "instagram.com/stories/" in url:
+    if "instagram.com/stories/" in message_text:
         await update.message.reply_text("Сторіз не можу скачати. Треба логін")
         return
 
-    url = url[2:] if url.startswith("**") else url  # Remove '**' if present
-
+    # Remove '**' prefix and any spaces if present
+    message_text = message_text.replace("**", "") if message_text.startswith("**") else message_text
+    print_logs(f"message_text is {message_text}")
     # Download the video
-    video_path = download_video(url)
+    video_path = download_video(message_text)
 
     if not video_path or not os.path.exists(video_path):
         return
@@ -89,9 +93,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             f"{os.path.getsize(video_path) / (1024 * 1024):.2f}MB. "
             f"Telegram API Max is 50MB"
         )
-
-    # Clean up the video file after sending
-    cleanup_file(video_path)
+    finally:
+        # Clean up regardless of success or failure
+        if video_path:
+            cleanup_file(video_path)
 
 def main():
     bot_token = os.getenv("BOT_TOKEN")

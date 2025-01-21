@@ -2,6 +2,7 @@
 # pylint: disable=missing-function-docstring
 
 import os
+import shutil
 import subprocess
 import tempfile
 import telegram
@@ -75,8 +76,6 @@ def get_video_duration(video_path):
         print(f"Error getting video duration: {e}")
         return None
 
-
-
 def download_video(url):
     temp_dir = tempfile.mkdtemp()
     command = [
@@ -93,28 +92,21 @@ def download_video(url):
         for filename in os.listdir(temp_dir):
             if filename.endswith(".mp4"):
                 return os.path.join(temp_dir, filename)
-
         return None
     except subprocess.CalledProcessError as e:
         print_logs(f"Download process error: {e.stderr}")
         return None
     except subprocess.TimeoutExpired as e:
         print_logs(f"Download timeout after {e.timeout}s")
-        cleanup_file(temp_dir)  # Clean up partial downloads
         return None
     except (OSError, ValueError, RuntimeError) as e:
         print_logs(f"System error during download: {e}")
         return None
-    finally:
-        if 'temp_dir' in locals() and not os.path.exists(os.path.join(temp_dir, "*.mp4")):
-            cleanup_file(temp_dir)
-
 
 def cleanup_file(video_path):
     print_logs(f"Video to delete {video_path}")
     try:
-        os.remove(video_path)
-        os.rmdir(os.path.dirname(video_path))
+        shutil.rmtree(os.path.dirname(video_path))
         print_logs(f"Video deleted {video_path}")
     except (OSError, PermissionError) as cleanup_error:
         print_logs(f"Error deleting file: {cleanup_error}")
