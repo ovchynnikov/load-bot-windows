@@ -12,8 +12,8 @@ from telegram import Update
 from telegram.error import TimedOut
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
-from logger import print_logs
-from video_utils import compress_video, download_video, cleanup_file
+from src.logger import print_logs
+from src.video_utils import compress_video, download_video, cleanup_file
 
 load_dotenv()
 
