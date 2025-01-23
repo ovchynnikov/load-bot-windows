@@ -1,4 +1,7 @@
 # pylint: disable=missing-module-docstring
-BOT_TOKEN = "your_telegram_bot_token_here"
+BOT_TOKEN="your_telegram_bot_token_here"
 DEBUG=False
-FFPROBE_PATH = "C:\\Users\\User\\Desktop\\ffmpeg\\bin\\ffprobe.exe"
+FFPROBE_PATH="C:\\Users\\User\\Desktop\\ffmpeg\\bin\\ffprobe.exe"
+LIMIT_BOT_ACCESS=False # if True, bot will only work for users in ALLOWED_USERNAMES or ALLOWED_CHAT_IDS
+ALLOWED_USERNAMES=ovocado # list of allowed usernames
+ALLOWED_CHAT_IDS= # list of allowed chat ids

@@ -14,27 +14,22 @@ from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
 from logger import print_logs
 from video_utils import compress_video, download_video, cleanup_file
+from permissions import is_user_or_chat_not_allowed, supported_sites
 
 load_dotenv()
 
-supported_sites = [
-    "**https://",
-    "instagram.com/",
-    "tiktok.com/",
-    "reddit.com/",
-    "x.com/",
-    "youtube.com/shorts",
-]
-
+# Load responses from JSON file
 @lru_cache(maxsize=1)
 def load_responses():
-    with open("responses.json", "r", encoding="utf-8") as file:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    responses_path = os.path.join(current_dir, "responses.json")
+    with open(responses_path, "r", encoding="utf-8") as file:
         data = json.load(file)
     return data["responses"]
 
 responses = load_responses()
 
-
+# Check if message has a spoiler
 def spoiler_in_message(entities):
     if entities:
         for entity in entities:
@@ -42,13 +37,17 @@ def spoiler_in_message(entities):
                 return True
     return False
 
+# Handle incoming messages and process videos
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  # pylint: disable=unused-argument
     """Handle incoming messages and process videos."""
     if not update.message or not update.message.text:
         return
-    username = update.effective_user.username
-    chat_id = update.effective_chat.id
-    await update.message.reply_text(f"Ваш username: {username}\nID чату: {chat_id}")
+
+    # Check if user is not allowed
+    if is_user_or_chat_not_allowed(update.effective_user.username, update.effective_chat.id):
+        await update.message.reply_text("You are not allowed to use this bot")
+        return
+
     message_text = update.message.text.strip()
 
     # Heartbeat word
@@ -72,7 +71,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     print_logs(f"message_text is {message_text}")
     # Download the video
     video_path = download_video(message_text)
-
+    # Check if video was downloaded
     if not video_path or not os.path.exists(video_path):
         return
 
@@ -106,6 +105,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         if video_path:
             cleanup_file(video_path)
 
+# Main function
 def main():
     bot_token = os.getenv("BOT_TOKEN")
     application = Application.builder().token(bot_token).build()

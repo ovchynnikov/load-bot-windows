@@ -1,2 +1,2 @@
-start /min python main.py
+start /min python src/main.py
 exit
