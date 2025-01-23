@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import telegram
 from dotenv import load_dotenv
-from src.logger import print_logs
+from logger import print_logs
 
 load_dotenv()
 

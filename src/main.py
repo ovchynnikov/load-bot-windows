@@ -12,8 +12,8 @@ from telegram import Update
 from telegram.error import TimedOut
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
-from src.logger import print_logs
-from src.video_utils import compress_video, download_video, cleanup_file
+from logger import print_logs
+from video_utils import compress_video, download_video, cleanup_file
 
 load_dotenv()
 
@@ -46,7 +46,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     """Handle incoming messages and process videos."""
     if not update.message or not update.message.text:
         return
-
+    username = update.effective_user.username
+    chat_id = update.effective_chat.id
+    await update.message.reply_text(f"Ваш username: {username}\nID чату: {chat_id}")
     message_text = update.message.text.strip()
 
     # Heartbeat word
