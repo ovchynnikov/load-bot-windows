@@ -39,7 +39,7 @@ You can install the required dependencies using one of the following methods:
 5. Set up the bot token in the `.env` file and other variables.
   Edit `.env` file with your variables. Use `.env.example` as a reference.
 
-## Usage
+## How to use the bot
 
 Follow these simple steps to set up and use the bot:
 
