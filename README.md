@@ -35,7 +35,7 @@ You can install the required dependencies using one of the following methods:
    This installs:
    - python-telegram-bot: For Telegram bot functionality 
    - python-dotenv: For loading environment variables
-   - 
+
 5. Set up the bot token in the `.env` file and other variables.
   Edit `.env` file with your variables. Use `.env.example` as a reference.
 
