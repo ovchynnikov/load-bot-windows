@@ -3,8 +3,8 @@
 ![python-version](https://img.shields.io/badge/python-3.9_|_3.10_|_3.11_|_3.12_|_3.13-blue.svg)
 [![license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-This guide provides step-by-step instructions to install and run the Instagram bot on a Linux system.
-- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to its respective authors. 
+This guide provides step-by-step instructions on how to install and run the Instagram bot on a Linux system.
+- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to their respective authors. 
 ---
 
 ## 1. Install Required Packages
@@ -35,6 +35,9 @@ You can install the required dependencies using one of the following methods:
    This installs:
    - python-telegram-bot: For Telegram bot functionality 
    - python-dotenv: For loading environment variables
+   - 
+5. Set up the bot token in the `.env` file and other variables.
+  Edit `.env` file with your variables. Use `.env.example` as a reference.
 
 ## Usage
 
@@ -43,10 +46,10 @@ Follow these simple steps to set up and use the bot:
 ### 1. Create Your Telegram Bot
 - Follow this guide to create your Telegram bot and obtain the bot token:  
   [How to Get Your Bot Token](https://www.freecodecamp.org/news/how-to-create-a-telegram-bot-using-python/).
-  Make sure you put token in `.env` file.
+  Make sure you put a token in `.env` file.
 
 ### 2. Start the bot
-- Run `start_bot.bat` to start the bot.
+Run `start_bot.bat` to start the bot
 or 
 ```cmd
 python main.py
@@ -81,8 +84,8 @@ x.com
 youtube shorts
 ```
 
-### Additionaly bot can download videos from other sources (for example youtube). Usually videos shorter than 10 minutes works fine. Telegram limitation is 50MB for a video.
-- To download full video from youtube add two asterisk before the url address.
+### Additionally, the bot can download videos from other sources (for example YouTube). Usually, videos shorter than 10 minutes work fine. Telegram limitation is 50MB for a video.
+- To download the full video from YouTube add two asterisks before the url address.
 Example:
 ```
   **https://www.youtube.com/watch?v=rxdu3whDVSM
