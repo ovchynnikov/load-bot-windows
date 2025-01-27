@@ -84,7 +84,9 @@ If the bot is active, it will respond accordingly.
    youtube shorts
    ```
 
-### Additionally, the bot can download videos from other sources (for example YouTube). Usually, videos shorter than 10 minutes work fine. Telegram limitation is 50MB for a video.
+### Additionally, the bot can download videos from other sources (for example YouTube). Usually, videos shorter than 10 minutes work fine. Telegram limitation is 50 MB for a video.
+Bot will try to compress the video to < 50 MB.
+
 - To download the full video from YouTube add two asterisks before the url address.
 Example:
 ```
