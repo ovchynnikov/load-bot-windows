@@ -1,4 +1,4 @@
-# Video Downloader Bot Setup Guide
+# Video Downloader Bot
 
 ![python-version](https://img.shields.io/badge/python-3.9_|_3.10_|_3.11_|_3.12_|_3.13-blue.svg)
 [![license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
