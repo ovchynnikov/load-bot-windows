@@ -18,14 +18,23 @@ from permissions import is_user_or_chat_not_allowed, supported_sites
 
 load_dotenv()
 
-# Load responses from JSON file
+# Cache responses from JSON file
 @lru_cache(maxsize=1)
 def load_responses():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    responses_path = os.path.join(current_dir, "responses.json")
-    with open(responses_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
-    return data["responses"]
+    """Function loading bot responses based on language setting."""
+    language = os.getenv("LANGUAGE", "en").lower()  # Default to Ukrainian if not set
+
+    filename = "responses_ua.json" if language == "ua" else "responses_en.json"
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            return data["responses"]
+    except FileNotFoundError:
+        # Return a minimal set of responses if no response files found
+        return [
+            "Sorry, I'm having trouble loading my responses right now! 😅",
+            "Вибачте, у мене проблеми із завантаженням відповідей! 😅"
+        ]
 
 responses = load_responses()
 
@@ -54,10 +63,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     message_text = update.message.text.strip()
 
-    # Heartbeat word
-    if "ботяра" in message_text.lower():
-        response = random.choice(responses)
-        await update.message.reply_text(response)
+    # Handle bot mention response
+    if "ботяра" in message_text.lower() or "bot_health" in message_text.lower():
+        await update.message.reply_text(random.choice(responses))
         return
 
     message_text = message_text.replace("** ", "**")
@@ -73,6 +81,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     # Remove '**' prefix and any spaces if present
     message_text = message_text.replace("**", "") if message_text.startswith("**") else message_text
     print_logs(f"message_text is {message_text}")
+    
     # Download the video
     video_path = download_video(message_text)
     # Check if video was downloaded

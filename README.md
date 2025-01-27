@@ -1,6 +1,7 @@
----
+# Video Downloader Bot Setup Guide
 
-# Instagram Bot Setup Guide
+![python-version](https://img.shields.io/badge/python-3.9_|_3.10_|_3.11_|_3.12_|_3.13-blue.svg)
+[![license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 This guide provides step-by-step instructions to install and run the Instagram bot on a Linux system.
 - Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to its respective authors. 
@@ -10,79 +11,30 @@ This guide provides step-by-step instructions to install and run the Instagram b
 
 You can install the required dependencies using one of the following methods:
 
-### Automatic Installation:
-```bash
-pip install -r requirements.txt
-```
+### Installation:
 
-### Manual Installation:
-```bash
-sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
-sudo chmod a+rx /usr/local/bin/yt-dlp
-sudo apt update && sudo apt install ffmpeg -y
-pip install python-telegram-bot python-dotenv
-```
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/ovchynnikov/load-bot-windows.git
+   ```
 
----
+2. Install Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## 2. Configure the Service File
+3. Set up FFmpeg:
+   - Download FFmpeg from [FFmpeg Windows builds](https://www.ffmpeg.org/download.html#build-windows)
+   - Extract the downloaded archive
+   - Place ffmpeg.exe in your bot's folder
 
-Create a service file for the bot using the following command:
-```bash
-sudo nano /etc/systemd/system/insta-bot.service
-```
-
-Add the following configuration to the file:
-```ini
-[Unit]
-Description=Instagram Bot Service
-After=network.target
-
-[Service]
-User=your_linux_user                                   # <====== REPLACE THIS
-WorkingDirectory=/path/to/your/bot                     # <====== REPLACE THIS
-ExecStart=/usr/bin/python3 /path/to/your/bot/main.py   # <====== REPLACE THIS
-Restart=always
-RestartSec=5
-Environment="BOT_TOKEN=your_bot_token"                 # <====== REPLACE THIS
-Environment="DEBUG=False"
-
-[Install]
-WantedBy=multi-user.target
-```
-
-### Notes:
-- `User`: Replace `your_linux_user` with the username that will run the bot.
-- `WorkingDirectory`: Replace with the absolute path to your bot's folder.
-- `ExecStart`: The command to start your bot. Adjust if you're using a virtual environment.
-- `Environment`: Provide required environment variables, such as `BOT_TOKEN`.
-- `Restart=always`: Ensures the bot restarts automatically if it crashes.
-
----
-
-## 3. Start the Bot Service
-
-Reload the systemd daemon and start the bot service:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable insta-bot.service
-sudo systemctl start insta-bot.service
-sudo systemctl status insta-bot.service
-```
-
----
-
-## Troubleshooting
-
-- Check the status of the service:
-  ```bash
-  sudo systemctl status insta-bot.service
-  ```
-- View logs for more details:
-  ```bash
-  journalctl -u insta-bot.service
-  ```
+4. Install required Python packages:
+   ```cmd
+   pip install python-telegram-bot python-dotenv
+   ```
+   This installs:
+   - python-telegram-bot: For Telegram bot functionality 
+   - python-dotenv: For loading environment variables
 
 ## Usage
 
@@ -91,24 +43,37 @@ Follow these simple steps to set up and use the bot:
 ### 1. Create Your Telegram Bot
 - Follow this guide to create your Telegram bot and obtain the bot token:  
   [How to Get Your Bot Token](https://www.freecodecamp.org/news/how-to-create-a-telegram-bot-using-python/).
+  Make sure you put token in `.env` file.
 
-### 2. Health Check
-- Verify the bot is running by sending a message with the trigger word:  
-  **`ботяра`**  
+### 2. Start the bot
+- Run `start_bot.bat` to start the bot.
+or 
+```cmd
+python main.py
+```
+
+### 3. Health Check
+- Verify the bot is running by sending a message with the trigger word:
+  ```sh
+  bot_health
+  ```
+  or
+  ```sh
+  ботяра
+  ```
 
   If the bot is active, it will respond accordingly.
 
-### 3. Start Using the Bot
-- Once the bot is created and the Linux service is running:
+### 3. Once the bot is created and the Linux service or Docker image is running:
   1. Send a URL from **YouTube Shorts**, **Instagram Reels**, or similar platforms to the bot.
   Example:
-  ```bash
+  ```
   https://youtube.com/shorts/kaTxVLGd6IE?si=YaUM3gYjr1kcXqTm
   ```
-  3. Wait for the bot to process the URL and respond.
+  2. Wait for the bot to process the URL and respond.
 
 ### Supported platforms by default:
-```bash
+```
 instagram reels
 tiktok
 reddit
@@ -119,8 +84,25 @@ youtube shorts
 ### Additionaly bot can download videos from other sources (for example youtube). Usually videos shorter than 10 minutes works fine. Telegram limitation is 50MB for a video.
 - To download full video from youtube add two asterisk before the url address.
 Example:
-```bash
-  **https://www.youtube.com/watch?v=rxdu3whDVSM or with a space ** https://www.youtube.com/watch?v=rxdu3whDVSM
+```
+  **https://www.youtube.com/watch?v=rxdu3whDVSM
+```
+or with a space
+```
+  ** https://www.youtube.com/watch?v=rxdu3whDVSM
 ``` 
+
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+
+### The bot can use 'Safelist' to restrict access for users or groups.
+Ensure these variables are set in your `.env` file, without them or with the chat ID and username.
+You can get your `chat_id` or `username` by setting `LIMIT_BOT_ACCESS=True` first. Then, send a link, and the bot will answer you with the chat ID and username.
+- Allowed Group Chat priority is highest. All users in the Group Chat can use the bot even if they have no access to the bot in private chat.
+- When `LIMIT_BOT_ACCESS=True` to use the bot in private messages add the username to the `ALLOWED_USERNAMES` variable.
+- If you want a bot in your Group Chat with restrictions, leave `ALLOWED_CHAT_IDS` empty and define the `ALLOWED_USERNAMES` variable list.
+```ini
+LIMIT_BOT_ACCESS=False  # If True, the bot will only work for users in ALLOWED_USERNAMES or ALLOWED_CHAT_IDS
+ALLOWED_USERNAMES= # a list of allowed usernames as strings separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
+ALLOWED_CHAT_IDS= # a list of allowed chat IDs as strings separated by commas. Example: ALLOWED_CHAT_IDS=-12349,12345,123456
+```
 ---
