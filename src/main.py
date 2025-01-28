@@ -52,23 +52,29 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     if not update.message or not update.message.text:
         return
 
-    # Check if user is not allowed
-    if is_user_or_chat_not_allowed(update.effective_user.username, update.effective_chat.id):
-        await update.message.reply_text(
-            f"You are not allowed to use this bot. "
-            f"Your username is {update.effective_user.username} "
-            f"and chat id is {update.effective_chat.id}"
-        )
-        return
-
     message_text = update.message.text.strip()
 
     # Handle bot mention response
     if "ботяра" in message_text.lower() or "bot_health" in message_text.lower():
-        await update.message.reply_text(random.choice(responses))
+        await update.message.reply_text(
+            f"{random.choice(responses)}\n"
+            f"[Chat ID]: {update.effective_chat.id}\n"
+            f"[Username]: {update.effective_user.username}"
+        )
+        return
+
+    # Check if user is not allowed
+    if is_user_or_chat_not_allowed(update.effective_user.username, update.effective_chat.id):
+        if update.effective_chat.type == "private":
+            await update.message.reply_text(
+                f"You are not allowed to use this bot.\n "
+                f"[Username]:  {update.effective_user.username}\n "
+                f"[Chat ID]: {update.effective_chat.id}"
+            )
         return
 
     message_text = message_text.replace("** ", "**")
+
 
     # Quick check before more expensive operations
     if not any(site in message_text for site in supported_sites):
@@ -81,7 +87,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     # Remove '**' prefix and any spaces if present
     message_text = message_text.replace("**", "") if message_text.startswith("**") else message_text
     print_logs(f"message_text is {message_text}")
-    
+
     # Download the video
     video_path = download_video(message_text)
     # Check if video was downloaded
@@ -120,11 +126,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
 # Main function
 def main():
-    bot_token = os.getenv("BOT_TOKEN")
-    application = Application.builder().token(bot_token).build()
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    print("Bot started. Ctrl+c to stop")
-    application.run_polling()
+    try:
+        bot_token = os.getenv("BOT_TOKEN")
+        application = Application.builder().token(bot_token).build()
+        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+        print("Bot started. Ctrl+c to stop")
+        application.run_polling()
+    except (telegram.error.TelegramError, KeyboardInterrupt) as e:
+        print("Error occurred while polling updates:", e)
 
 if __name__ == "__main__":
     main()

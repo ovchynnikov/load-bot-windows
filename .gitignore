@@ -18,3 +18,6 @@ ENV/
 .VENV/
 
 .codegpt
+
+# Docker
+.docker/

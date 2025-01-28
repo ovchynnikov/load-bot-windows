@@ -78,6 +78,7 @@ If the bot is active, it will respond accordingly.
 ### Supported platforms by default:
    ```
    instagram reels
+   facebook reels
    tiktok
    reddit
    x.com
